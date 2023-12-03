@@ -1,66 +1,54 @@
 import React from "react";
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend
-} from "chart.js";
+// @ts-ignore
+import Plot from "react-plotly.js"
 
-import {Chart} from "react-chartjs-2"
+import entries from "../../assets/data/one-day-entries.json"
 
-ChartJS.register(
-    LinearScale,
-    CategoryScale,
-    BarElement,
-    Legend,
-    Tooltip,
-    Title
-)
+export default function GlucoseGraph() {
 
-export default function Graph() {
+    const data = [{
+        x: entries.map(row => new Date(row.dateString)),
+        y: entries.map(row => row.sgv),
+        type: "line",
+    }]
 
-    const dataset = [
-        { year: 2010, count: 10 },
-        { year: 2011, count: 20 },
-        { year: 2012, count: 15 },
-        { year: 2013, count: 25 },
-        { year: 2014, count: 22 },
-        { year: 2015, count: 30 },
-        { year: 2016, count: 28 },
-    ];
-
-    const data = {
-        labels: dataset.map(row => row.year),
-        datasets: [
-            {
-                label: "Acquisition year",
-                data: dataset.map(row => row.count),
-                backgroundColor: "#9bd0f5",
-                borderColor: "#36a2eb"
-            }
-        ]
+    const selectorOptions = {
+        buttons: [{
+            step: "day",
+            stepmode: "backward",
+            count: 1,
+            label: "24h"
+        },{
+            step: "hour",
+            stepmode: "backward",
+            count: 12,
+            label: "12h"
+        },{
+            step: "hour",
+            stepmode: "backward",
+            count: 6,
+            label: "6h"
+        },{
+            step: "hour",
+            stepmode: "backward",
+            count: 3,
+            label: "3h"
+        }]
     }
 
-    const options = {
-        scales: {
-            y: {
-                beginAtZero: true
-            }
+    const layout = {
+        height: 600,
+        title: "Blood glucose graph",
+        xaxis: {
+            rangeselector: selectorOptions,
+            rangeslider: {}
         },
-        plugins: {
-            title: {
-                display: true,
-                text: 'Custom Chart Title',
-                font: {
-                    "size": "32"
-                }
-            }
-        }
     }
 
-    return <Chart type={"bar"} data={data} options={options}/>
+    const config = {
+        responsive: true,
+    }
+
+    return <Plot data={data} layout={layout} config={config}/>
 }
 
