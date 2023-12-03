@@ -1,0 +1,16 @@
+/* plain css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-display: swap;
+    font-family: Roboto-Flex-Variable;
+    src: local('Roboto-Flex-Variable'),
+    url("assets/fonts/RobotoFlex-VariableFont.ttf") format('truetype supports variations'),
+    url("assets/fonts/RobotoFlex-VariableFont.ttf") format('truetype-variations');
+}
+
+body {
+    font-family: Roboto-Flex-Variable, sans-serif;
+}
