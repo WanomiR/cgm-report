@@ -9,7 +9,18 @@ export default function GlucoseGraph() {
     const data = [{
         x: entries.map(row => new Date(row.dateString)),
         y: entries.map(row => row.sgv),
-        type: "line",
+        type: "scatter",
+        mode: "markers",
+        marker: {
+            color: entries.map(row => row.sgv),
+            colorscale: [
+                [0, "red"],
+                [.5, "green"],
+                [1, "red"],
+            ],
+            cmin: 100,
+            cmax: 250
+        }
     }]
 
     const selectorOptions = {
