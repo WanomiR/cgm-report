@@ -1,27 +1,40 @@
-import React from "react";
-// @ts-ignore
+// @ts-nocheck
+import React, {useEffect, useState} from "react";
 import Plot from "react-plotly.js"
+import {api} from "../../utils/api"
 
-import entries from "../../assets/data/one-day-entries.json"
 
 export default function GlucoseGraph() {
 
-    const data = [{
-        x: entries.map(row => new Date(row.dateString)),
-        y: entries.map(row => row.sgv),
-        type: "scatter",
-        mode: "markers",
-        marker: {
-            color: entries.map(row => row.sgv),
-            colorscale: [
-                [0, "red"],
-                [.5, "green"],
-                [1, "red"],
-            ],
-            cmin: 100,
-            cmax: 250
-        }
-    }]
+    const [data, setData] = useState(null)
+
+    const fetchEntries = async (date = "2022-12-17") => {
+
+        const response = await api.get(`/entries/?date=${date}`)
+        const entries = response.data;
+
+        setData([{
+                x: entries.map(row => new Date(row.dateString)),
+                y: entries.map(row => row.sgv),
+                type: "scatter",
+                mode: "markers",
+                marker: {
+                    color: entries.map(row => row.sgv),
+                    colorscale: [
+                        [0, "red"],
+                        [.5, "green"],
+                        [1, "red"],
+                    ],
+                    cmin: 100,
+                    cmax: 250
+                }
+            }])
+    }
+
+    useEffect(() => {
+        fetchEntries();
+    }, []);
+
 
     const selectorOptions = {
         buttons: [{
@@ -29,17 +42,17 @@ export default function GlucoseGraph() {
             stepmode: "backward",
             count: 1,
             label: "24h"
-        },{
+        }, {
             step: "hour",
             stepmode: "backward",
             count: 12,
             label: "12h"
-        },{
+        }, {
             step: "hour",
             stepmode: "backward",
             count: 6,
             label: "6h"
-        },{
+        }, {
             step: "hour",
             stepmode: "backward",
             count: 3,
@@ -60,6 +73,9 @@ export default function GlucoseGraph() {
         responsive: true,
     }
 
-    return <Plot data={data} layout={layout} config={config}/>
+    return (
+        data &&
+        <Plot data={data} layout={layout} config={config}/>
+    )
 }
 
