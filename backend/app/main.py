@@ -4,14 +4,12 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from crud import fetch_entries
-from scripts.entries import filter_entries_by_date
-from schemas import Entry
+from scripts.entries import filter_entries_by_date, dates_range
+from schemas import Entry, EntriesRange
 
 app = FastAPI()
 
-
 origins = ["http://localhost:3000"]
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,5 +21,12 @@ app.add_middleware(
 
 
 @app.get("/entries/", response_model=list[Entry])
-async def get_entries_by_date(date: Annotated[str, Query()]):
-    return filter_entries_by_date(fetch_entries(), date)
+async def get_entries_by_date(date: Annotated[str, Query(pattern=r"^[\d]{4}-[\d]{2}-[\d]{2}$")]):
+    entries = await fetch_entries()
+    return filter_entries_by_date(entries, date)
+
+
+@app.get("/entries/range/", response_model=EntriesRange)
+async def get_entries_dates_range():
+    entries = await fetch_entries()
+    return dates_range(entries)

@@ -1,10 +1,11 @@
 from database import collection
 
 
-def fetch_entries():
+async def fetch_entries():
 
     entries = []
-    for doc in collection.find({}):
+    cursor = collection.find({})
+    async for doc in cursor:
         entries.append(doc)
 
     return entries

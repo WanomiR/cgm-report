@@ -1,39 +1,48 @@
 // @ts-nocheck
 import React, {useEffect, useState} from "react";
 import Plot from "react-plotly.js"
-import {api} from "../../utils/api"
+import {fetchEntries, fetchDatesRange} from "../api/entries";
 
 
 export default function GlucoseGraph() {
 
     const [data, setData] = useState(null)
 
-    const fetchEntries = async (date = "2022-12-17") => {
+    const [dateInfo, setDateInfo] = useState({
+        date: "2022-12-17",
+        dateMin: "2022-12-12",
+        dateMax: "2023-03-05"
+    })
 
-        const response = await api.get(`/entries/?date=${date}`)
-        const entries = response.data;
+    const loadEntries = async () => {
+
+        const entries = await fetchEntries(dateInfo.date)
 
         setData([{
-                x: entries.map(row => new Date(row.dateString)),
-                y: entries.map(row => row.sgv),
-                type: "scatter",
-                mode: "markers",
-                marker: {
-                    color: entries.map(row => row.sgv),
-                    colorscale: [
-                        [0, "red"],
-                        [.5, "green"],
-                        [1, "red"],
-                    ],
-                    cmin: 100,
-                    cmax: 250
-                }
-            }])
+            x: entries.map(row => new Date(row.dateString)),
+            y: entries.map(row => row.sgv),
+            type: "scatter",
+            mode: "markers",
+            marker: {
+                color: entries.map(row => row.sgv),
+                colorscale: [
+                    [0, "red"],
+                    [.5, "green"],
+                    [1, "red"],
+                ],
+                cmin: 100,
+                cmax: 250
+            }
+        }])
+    }
+
+    const handleDateChange = (e) => {
+        setDateInfo({...dateInfo, date: e.target.value})
     }
 
     useEffect(() => {
-        fetchEntries();
-    }, []);
+        loadEntries()
+    }, [dateInfo]);
 
 
     const selectorOptions = {
@@ -74,8 +83,20 @@ export default function GlucoseGraph() {
     }
 
     return (
-        data &&
-        <Plot data={data} layout={layout} config={config}/>
+        <>
+            <form onSubmit={fetchEntries}>
+                <label htmlFor={"date"}>Select date</label><br/>
+                <input
+                    type={"date"} id={"date"} value={dateInfo.date}
+                    min={dateInfo.dateMin} max={dateInfo.dateMax}
+                    onChange={handleDateChange}
+                ></input>
+            </form>
+            {
+                data &&
+                <Plot data={data} layout={layout} config={config}/>
+            }
+        </>
     )
 }
 

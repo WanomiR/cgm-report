@@ -1,4 +1,5 @@
 from pandas import Timestamp
+from datetime import date
 from typing import Annotated
 from pydantic import BaseModel, PlainValidator, WithJsonSchema
 
@@ -15,3 +16,9 @@ class Entry(BaseModel):
     dateString: _Timestamp
     sgv: float
     noise: float
+
+
+class EntriesRange(BaseModel):
+    dateMin: date
+    dateMax: date
+
