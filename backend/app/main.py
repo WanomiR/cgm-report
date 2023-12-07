@@ -35,6 +35,10 @@ def get_entries_by_date(date: Annotated[str, Query()], db: Session = Depends(get
     return crud.get_entries_by_date(db, date)
 
 
+@app.get("/entries/range/")
+def get_entries_dates_range(db: Session = Depends(get_db)):
+    return crud.get_entries_dates_range(db)
+
 
 @app.post("/entries/", response_model=schemas.Entry)
 def create_entry(entry: schemas.Entry, db: Session = Depends(get_db)):
@@ -42,5 +46,5 @@ def create_entry(entry: schemas.Entry, db: Session = Depends(get_db)):
 
 
 @app.delete("/entries/")
-def delete_entry(entry_id: int, db: Session = Depends(get_db)):
+def delete_entry(entry_id: int, db: Session = Depends(get_db)) -> int:
     return crud.delete_entry(db, entry_id)
