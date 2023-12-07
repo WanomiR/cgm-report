@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, {useEffect, useState} from "react";
 import Plot from "react-plotly.js"
-import {fetchEntries, fetchDatesRange} from "../api/entries";
+import {fetchEntries, fetchDatesRange} from "../api/api";
 
 
 export default function GlucoseGraph() {
@@ -13,6 +13,23 @@ export default function GlucoseGraph() {
         dateMin: "2022-12-12",
         dateMax: "2023-03-05"
     })
+
+    useEffect(() => {
+        // loadDatesRange()
+    }, [])
+
+    useEffect(() => {
+        loadEntries()
+    }, [dateInfo]);
+
+    const loadDatesRange = async () => {
+        const {min, max} = await fetchDatesRange()
+        setDateInfo({
+            date: max,
+            dateMin: min,
+            dateMax: max
+        })
+    }
 
     const loadEntries = async () => {
 
@@ -39,10 +56,6 @@ export default function GlucoseGraph() {
     const handleDateChange = (e) => {
         setDateInfo({...dateInfo, date: e.target.value})
     }
-
-    useEffect(() => {
-        loadEntries()
-    }, [dateInfo]);
 
 
     const selectorOptions = {

@@ -1,5 +1,9 @@
 // @ts-nocheck
-import {api} from "../../utils/api"
+import axios from "axios";
+
+export const api = axios.create({
+    baseURL: "http://localhost:8000"
+})
 
 export const fetchEntries = async (date) => {
     const response = await api.get(`/entries/?date=${date}`)
@@ -7,6 +11,6 @@ export const fetchEntries = async (date) => {
 }
 
 export const fetchDatesRange = async () => {
-    const response = await api.get(`entries/range/`)
+    const response = await api.get(`/entries/range/`)
     return response.data
 }
