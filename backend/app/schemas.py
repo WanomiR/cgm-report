@@ -1,24 +1,12 @@
-from pandas import Timestamp
-from datetime import date
-from typing import Annotated
-from pydantic import BaseModel, PlainValidator, WithJsonSchema
-
-
-_Timestamp = Annotated[
-    Timestamp,
-    PlainValidator(lambda x: Timestamp(x)),
-    WithJsonSchema({"type": 'date-time'})
-]
+import datetime
+from pydantic import BaseModel
 
 
 class Entry(BaseModel):
-    _id: str
-    dateString: _Timestamp
-    sgv: float
-    noise: float
+    id: int
+    ts: datetime.datetime
+    sgv: int
+    noise: int
 
-
-class EntriesRange(BaseModel):
-    dateMin: date
-    dateMax: date
-
+    class Config:
+        orm_mode = True

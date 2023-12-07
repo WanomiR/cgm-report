@@ -1,6 +1,11 @@
-from motor import motor_asyncio
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-client = motor_asyncio.AsyncIOMotorClient("mongodb://localhost:27017/")
+SQLALCHEMY_DATABASE_URL = "postgresql://ioann@localhost:5432/ns-dump"
 
-db = client["mongo-dump-2023-10-19"]
-collection = db["entries"]
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()

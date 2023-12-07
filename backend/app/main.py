@@ -1,11 +1,11 @@
-from typing import Annotated
-
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
 
-from crud import fetch_entries
-from scripts.entries import filter_entries_by_date, dates_range
-from schemas import Entry, EntriesRange
+import crud, models, schemas
+from database import SessionLocal, engine
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -20,13 +20,20 @@ app.add_middleware(
 )
 
 
-@app.get("/entries/", response_model=list[Entry])
-async def get_entries_by_date(date: Annotated[str, Query(pattern=r"^[\d]{4}-[\d]{2}-[\d]{2}$")]):
-    entries = await fetch_entries()
-    return filter_entries_by_date(entries, date)
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
-@app.get("/entries/range/", response_model=EntriesRange)
-async def get_entries_dates_range():
-    entries = await fetch_entries()
-    return dates_range(entries)
+@app.post("/entries/", response_model=schemas.Entry)
+def create_entry(entry: schemas.Entry, db: Session = Depends(get_db)):
+    return crud.create_entry(db, entry)
+
+
+@app.delete("/entries/")
+def delete_entry(entry_id: int, db: Session = Depends(get_db)):
+    return crud.delete_entry(db, entry_id)
