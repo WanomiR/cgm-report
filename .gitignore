@@ -1,8 +1,8 @@
 # node modules
-node_modules
+/node_modules/
 # build folder
-build
-venv
+/build/
+/venv/
 
 .idea
 .vscode
