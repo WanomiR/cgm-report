@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Annotated
 from sqlalchemy.orm import Session
 
 import crud, models, schemas
@@ -27,6 +28,12 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+@app.get("/entries/", response_model=list[schemas.Entry])
+def get_entries_by_date(date: Annotated[str, Query()], db: Session = Depends(get_db)):
+    return crud.get_entries_by_date(db, date)
+
 
 
 @app.post("/entries/", response_model=schemas.Entry)

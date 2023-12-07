@@ -19,7 +19,7 @@ export default function GlucoseGraph() {
         const entries = await fetchEntries(dateInfo.date)
 
         setData([{
-            x: entries.map(row => new Date(row.dateString)),
+            x: entries.map(row => new Date(row.ts)),
             y: entries.map(row => row.sgv),
             type: "scatter",
             mode: "markers",

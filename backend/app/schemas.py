@@ -9,4 +9,4 @@ class Entry(BaseModel):
     noise: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

@@ -9,8 +9,8 @@ const App = () => {
     return (
         <div className={styles.app}>
             <h1 className={styles.title}>Medhow Report</h1>
-            {/*<GlucoseGraph />*/}
-            <PercentileGraph />
+            <GlucoseGraph />
+            {/*<PercentileGraph />*/}
         </div>
     );
 };

@@ -1,10 +1,15 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import cast, Date
 
 import models, schemas
 
 
-def get_entries(db: Session, skip: int = 0, limit: int = 100):
+def get_all_entries(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Entry).offset(skip).limit(limit).all()
+
+
+def get_entries_by_date(db: Session, date: str):
+    return db.query(models.Entry).filter(cast(models.Entry.ts, Date) == date).all()
 
 
 def create_entry(db: Session, entry: schemas.Entry):
