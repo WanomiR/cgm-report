@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import cast, text, Date
-from sqlalchemy.sql.expression import func
+from sqlalchemy import text
 
 import models, schemas
 
@@ -10,11 +9,12 @@ def get_all_entries(db: Session, skip: int = 0, limit: int = 100):
 
 
 def get_entries_by_date(db: Session, date: str):
-    return db.query(models.Entry).filter(cast(models.Entry.ts, Date) == date).all()
+    stmt = text(f"SELECT * FROM entries WHERE ts::date = '{date}'")
+    return db.execute(stmt).mappings().all()
 
 
 def get_entries_dates_range(db: Session):
-    stmt = text("select max(ts::date),  min(ts::date) from entries")
+    stmt = text("SELECT max(ts::date),  min(ts::date) FROM entries")
     return db.execute(stmt).mappings().first()
 
 
@@ -32,6 +32,7 @@ def create_entry(db: Session, entry: schemas.Entry):
 
 
 def delete_entry(db: Session, entry_id: int) -> int:
+    # stmt = text(f"SELECT * FROM entries WHERE id = {entry_id}")
     entry = db.query(models.Entry).filter(models.Entry.id == entry_id).first()
     if entry is None:
         return 0
