@@ -7,7 +7,11 @@ import DatePicker from "../date-picker/date-picker";
 
 export default function GlucoseGraph() {
 
-    const [data, setData] = useState(null)
+    const [dataSate, setDataState] = useState({
+        isLoading: false,
+        hasError: false,
+        data: []
+    })
 
     const [dateInfo, setDateInfo] = useState({
         date: "2022-12-17",
@@ -22,25 +26,33 @@ export default function GlucoseGraph() {
 
     const loadEntries = async () => {
 
-        const entries = await fetchEntries(dateInfo.date)
-
-        setData([{
-            x: entries.map(row => new Date(row.ts)),
-            y: entries.map(row => row.sgv),
-            type: "scatter",
-            mode: "markers",
-            marker: {
-                color: entries.map(row => row.sgv),
-                colorscale: [
-                    [0, "red"],
-                    [.5, "green"],
-                    [1, "red"],
-                ],
-                cmin: 100,
-                cmax: 250
-            }
-        }])
+        setDataState({...dataSate, isLoading: true, hasError: false});
+        try {
+            const entries = await fetchEntries(dateInfo.date)
+            setDataState({
+                ...dataSate, isLoading: false, data: [{
+                    x: entries.map(row => new Date(row.ts)),
+                    y: entries.map(row => row.sgv),
+                    type: "scatter",
+                    mode: "markers",
+                    marker: {
+                        color: entries.map(row => row.sgv),
+                        colorscale: [
+                            [0, "red"],
+                            [.5, "green"],
+                            [1, "red"],
+                        ],
+                        cmin: 100,
+                        cmax: 250
+                    }
+                }]
+            })
+        } catch (error) {
+            setDataState({...dataSate, isLoading: false, hasError: true});
+            console.log(error);
+        }
     }
+
 
     const selectorOptions = {
         buttons: [{
@@ -79,11 +91,15 @@ export default function GlucoseGraph() {
         responsive: true,
     }
 
+    const {data, isLoading, hasError} = dataSate;
+
     return (
         <>
             <DatePicker dateInfo={dateInfo} setDateInfo={setDateInfo}/>
+            {isLoading && "Data is loading..."}
+            {hasError && "Data loading error!"}
             {
-                data &&
+                !isLoading && !hasError && data.length &&
                 <Plot data={data} layout={layout} config={config}/>
             }
         </>
