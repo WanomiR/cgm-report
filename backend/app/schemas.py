@@ -6,7 +6,7 @@ class Entry(BaseModel):
     id: int
     ts: datetime.datetime
     sgv: int
-    noise: int
+    noise: int | None = None
 
     class Config:
         from_attributes = True

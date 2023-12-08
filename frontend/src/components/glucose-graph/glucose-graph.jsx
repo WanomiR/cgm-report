@@ -14,14 +14,31 @@ export default function GlucoseGraph() {
     })
 
     const [dateInfo, setDateInfo] = useState({
-        date: "2022-12-17",
-        dateMin: "2022-12-12",
-        dateMax: "2023-03-05"
+        date: "",
+        dateMin: "",
+        dateMax: ""
+        // date: "2022-12-17",
+        // dateMin: "2022-12-12",
+        // dateMax: "2023-10-19"
     })
 
     useEffect(() => {
         loadEntries()
     }, [dateInfo]);
+
+    useEffect(() => {
+        (async () => {
+            const {max, min} = await fetchDatesRange()
+            setDateInfo({
+                ...dateInfo,
+                date: min,
+                dateMin: min,
+                dateMax: max,
+            })
+
+            loadEntries();
+        })();
+    }, []);
 
 
     const loadEntries = async () => {
