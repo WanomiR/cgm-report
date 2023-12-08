@@ -2,6 +2,7 @@
 import React, {useEffect, useState} from "react";
 import Plot from "react-plotly.js"
 import {fetchEntries, fetchDatesRange} from "../api/api";
+import DatePicker from "../date-picker/date-picker";
 
 
 export default function GlucoseGraph() {
@@ -15,21 +16,9 @@ export default function GlucoseGraph() {
     })
 
     useEffect(() => {
-        // loadDatesRange()
-    }, [])
-
-    useEffect(() => {
         loadEntries()
     }, [dateInfo]);
 
-    const loadDatesRange = async () => {
-        const {min, max} = await fetchDatesRange()
-        setDateInfo({
-            date: max,
-            dateMin: min,
-            dateMax: max
-        })
-    }
 
     const loadEntries = async () => {
 
@@ -52,11 +41,6 @@ export default function GlucoseGraph() {
             }
         }])
     }
-
-    const handleDateChange = (e) => {
-        setDateInfo({...dateInfo, date: e.target.value})
-    }
-
 
     const selectorOptions = {
         buttons: [{
@@ -97,14 +81,7 @@ export default function GlucoseGraph() {
 
     return (
         <>
-            <form onSubmit={fetchEntries}>
-                <label htmlFor={"date"}>Select date</label><br/>
-                <input
-                    type={"date"} id={"date"} value={dateInfo.date}
-                    min={dateInfo.dateMin} max={dateInfo.dateMax}
-                    onChange={handleDateChange}
-                ></input>
-            </form>
+            <DatePicker dateInfo={dateInfo} setDateInfo={setDateInfo}/>
             {
                 data &&
                 <Plot data={data} layout={layout} config={config}/>
