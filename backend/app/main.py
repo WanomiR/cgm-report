@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, Query
+from fastapi import FastAPI, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Annotated
 from sqlalchemy.orm import Session
@@ -31,11 +31,13 @@ def get_db():
 
 
 @app.get("/entries/", response_model=list[schemas.Entry])
-def get_entries_by_date(date: Annotated[str, Query()], db: Session = Depends(get_db)):
-    return crud.get_entries_by_date(db, date)
+def get_entries_by_date(date_from: Annotated[str, Header()],
+                        date_to: Annotated[str, Header()],
+                        db: Session = Depends(get_db)):
+    return crud.get_entries_by_date(db, date_from, date_to)
 
 
-@app.get("/entries/range/")
+@app.get("/entries-range/")
 def get_entries_dates_range(db: Session = Depends(get_db)):
     return crud.get_entries_dates_range(db)
 

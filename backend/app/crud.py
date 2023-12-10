@@ -8,8 +8,12 @@ def get_all_entries(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Entry).offset(skip).limit(limit).all()
 
 
-def get_entries_by_date(db: Session, date: str):
-    stmt = text(f"SELECT * FROM entries WHERE ts::date = '{date}'")
+def get_entries_by_date(db: Session, date_from: str, date_to: str):
+    stmt = text(f"""
+        SELECT * 
+        FROM entries 
+        WHERE ts::date >= '{date_from}' AND ts::date <= '{date_to}'
+    """)
     return db.execute(stmt).mappings().all()
 
 
@@ -40,5 +44,3 @@ def delete_entry(db: Session, entry_id: int) -> int:
         db.delete(entry)
         db.commit()
         return 1
-
-

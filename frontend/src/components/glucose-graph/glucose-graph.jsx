@@ -31,7 +31,7 @@ export default function GlucoseGraph() {
             const {max, min} = await fetchDatesRange()
             setDateInfo({
                 ...dateInfo,
-                date: min,
+                date: max,
                 dateMin: min,
                 dateMax: max,
             })
@@ -45,7 +45,7 @@ export default function GlucoseGraph() {
 
         setDataState({...dataSate, isLoading: true, hasError: false});
         try {
-            const entries = await fetchEntries(dateInfo.date)
+            const entries = await fetchEntries(dateInfo.date, dateInfo.date)
             setDataState({
                 ...dataSate, isLoading: false, data: [{
                     x: entries.map(row => new Date(row.ts)),
